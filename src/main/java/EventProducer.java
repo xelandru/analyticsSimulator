@@ -28,9 +28,11 @@ public class EventProducer implements Runnable {
         ) {
             while (true) {
                 line = reader.readLine();
-                if (line != null)
+                if (line != null && !(line.isEmpty())) {
                     eventQueue.put(line);
+                }
             }
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
