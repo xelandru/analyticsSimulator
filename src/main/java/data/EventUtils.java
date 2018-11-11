@@ -10,10 +10,10 @@ public final class EventUtils {
     public static Event getEventFromString(String eventAsString) {
 
         String[] fields = eventAsString.split(",");
-        long timeStamp = Long.valueOf(fields[0]);
-        EventType type = Event.EventType.valueOf(fields[1]);
-        String userId = fields[2];
-        String sessionId = fields[3];
+        long timeStamp = Long.valueOf(fields[0].trim());
+        EventType type = Event.EventType.valueOf(fields[1].trim());
+        String userId = fields[2].trim();
+        String sessionId = fields[3].trim();
         return new Event(timeStamp, type, userId, sessionId);
     }
 
