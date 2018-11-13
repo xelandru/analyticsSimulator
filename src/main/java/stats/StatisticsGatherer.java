@@ -49,6 +49,9 @@ public class StatisticsGatherer {
 
         usersConnectedNow.clear();
 
+
+        //add this to cleanup
+        eventDB.entrySet().removeIf(entry -> entry.getValue().getEventType().equals(LOGOUT));
         return new Statistics(numberOfUsersConnected, averageSessionDuration, totalUsers).toString();
     }
 
