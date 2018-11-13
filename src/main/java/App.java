@@ -46,7 +46,7 @@ public class App {
         StatisticsGatherer gatherer = new StatisticsGatherer(dataBase);
 
         while (true) {
-            Thread.sleep(3000);
+            Thread.sleep(4000);
             System.out.println(gatherer.get());
         }
 
