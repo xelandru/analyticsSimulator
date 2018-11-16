@@ -12,6 +12,8 @@ public class EventProducer implements Runnable {
     private final BlockingQueue<String> eventQueue;
     private final String pathToEventsFile;
 
+
+
     public EventProducer(BlockingQueue<String> eventQue, String pathToSource) {
         this.eventQueue = eventQue;
         this.pathToEventsFile = pathToSource;
@@ -26,7 +28,7 @@ public class EventProducer implements Runnable {
                 InputStream in = Files.newInputStream(pathToFile);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in))
         ) {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 line = reader.readLine();
                 if (line != null && !(line.isEmpty())) {
                     eventQueue.put(line);
@@ -35,6 +37,7 @@ public class EventProducer implements Runnable {
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 
