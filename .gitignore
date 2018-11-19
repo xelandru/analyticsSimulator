@@ -25,3 +25,4 @@ hs_err_pid*
 
 .idea
 analyticsSimulator.iml
+output.csv

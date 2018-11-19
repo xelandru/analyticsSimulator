@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-INPUT="/home/adascalu/Desktop/analyticsSimulator/src/main/resources/data.csv"
-OUTPUT="/home/adascalu/Desktop/analyticsSimulator/src/main/resources/output.csv"
+INPUT="data.csv"
+OUTPUT="output.csv"
 
 START=1
 STEP=1000
 END=1000
 STOP=20000
 WAIT=10
+> $OUTPUT
 sleep $WAIT
 
 while [ $END -le $STOP ]

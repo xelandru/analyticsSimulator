@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 
 public class App {
 
-    private static final String PATH_TO_FILE = "/home/adascalu/Desktop/analyticsSimulator/src/main/resources/output.csv";
+    private static final String PATH_TO_FILE = "src/main/resources/output.csv";
     private static final int QUEUE_SIZE = 200_000;
 
     public static void main(String[] args) throws InterruptedException {

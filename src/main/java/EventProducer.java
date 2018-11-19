@@ -21,7 +21,7 @@ public class EventProducer implements Runnable {
 
     @Override
     public void run() {
-        Path pathToFile = Paths.get(pathToEventsFile);
+        Path pathToFile = Paths.get(pathToEventsFile).toAbsolutePath();
         String line;
 
         try (
