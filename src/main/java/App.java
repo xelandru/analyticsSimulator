@@ -1,6 +1,10 @@
 import data.Event;
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListener;
+import org.apache.commons.io.input.TailerListenerAdapter;
 import stats.StatisticsGatherer;
 
+import java.io.File;
 import java.util.concurrent.*;
 
 public class App {
@@ -23,13 +27,13 @@ public class App {
         serviceConsumer.submit(consumer);
         StatisticsGatherer statistics = new StatisticsGatherer(dataBase);
         while (true) {
-            Thread.sleep(9000);
-            System.out.println("Size:" + eventQueue.size());
+            Thread.sleep(2000);
             consumer.pause();
-            System.out.println(statistics.get());
+//            System.out.println(statistics.get());
+
+            statistics.get();
             consumer.resume();
-
         }
-
     }
 }
+
