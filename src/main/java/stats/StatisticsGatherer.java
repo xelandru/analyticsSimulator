@@ -13,17 +13,20 @@ public class StatisticsGatherer {
 
     private final ConcurrentHashMap<String, Event> eventDB;
     private long allSessionsDuration = 0;
+    private long allUsersConnectedTimeStamp = 0;
     private int logoutCounter = 0;
     private Set<String> usersConnectedNow;
     private static Set<String> allUsersDisconnected;
+    private final long windowSize;
 
-    public StatisticsGatherer(ConcurrentHashMap<String, Event> eventDB) {
+    public StatisticsGatherer(ConcurrentHashMap<String, Event> eventDB, long windowSize) {
         this.eventDB = eventDB;
         this.usersConnectedNow = new HashSet<>();
         allUsersDisconnected = new HashSet<>();
+        this.windowSize = windowSize;
     }
 
-    public String get() {
+    public String get(int iteration) {
 
         eventDB.forEach((key, event) -> {
 
@@ -34,12 +37,25 @@ public class StatisticsGatherer {
             }
             if (event.getEventType().equals(LOGIN)) {
                 usersConnectedNow.add(event.getUserId());
+                allUsersConnectedTimeStamp+=event.getTimeStamp();
             }
         });
 
 
+        double windowSizeInSeconds = (double) windowSize / 1000;
+
+        /*
+                Avg = TotalTime/totalUsers
+                totalUsers=connected+ disconnected
+                TotalTime = TimeConnected + TimeDisconnected
+                TimeDisconnected =  allSessionsDuration
+                TimeConnected = connected*iteration*WindowSize-sum(timeStampOfLogin)
+
+         */
         int numberOfUsersConnected = usersConnectedNow.size();
-        double averageSessionDuration = (double) allSessionsDuration / logoutCounter;
+
+        double averageSessionDuration = (allSessionsDuration + numberOfUsersConnected * windowSizeInSeconds * iteration - allUsersConnectedTimeStamp)
+                / (logoutCounter + numberOfUsersConnected);
 
 
         long totalUsers = allUsersDisconnected
@@ -47,6 +63,8 @@ public class StatisticsGatherer {
                 .filter(s -> !usersConnectedNow.contains(s))
                 .count() + numberOfUsersConnected;
 
+        //reset
+        allUsersConnectedTimeStamp =0;
         usersConnectedNow.clear();
 
 
