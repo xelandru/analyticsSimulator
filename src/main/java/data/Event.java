@@ -6,6 +6,15 @@ public class Event {
     private final String userId;
     private final String sessionId;
     private final EventType eventType;
+    private int window;
+
+    public int getWindow() {
+        return window;
+    }
+
+    public void incrementWindow() {
+        window++;
+    }
 
     public long getTimeStamp() {
         return timeStamp;
