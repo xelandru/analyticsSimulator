@@ -1,16 +1,20 @@
+import data.Event;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
+
+import static data.EventUtils.parseEventFromString;
 
 public class EventProducer implements Runnable {
 
-    private final BlockingQueue<String> eventQueue;
+    private final BlockingQueue<Event> eventQueue;
     private final String pathToEventsFile;
 
-    public EventProducer(BlockingQueue<String> eventQue, String pathToSource) {
+    public EventProducer(BlockingQueue<Event> eventQue, String pathToSource) {
         this.eventQueue = eventQue;
         this.pathToEventsFile = pathToSource;
     }
@@ -26,17 +30,20 @@ public class EventProducer implements Runnable {
     private class MyTailerListener extends TailerListenerAdapter {
         public void handle(String line) {
             if (line != null && !(line.isEmpty())) {
-                try {
-                    eventQueue.put(line);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Optional<Event> optionalEvent = parseEventFromString(line);
+                optionalEvent.ifPresent(event -> {
+                    try {
+                        eventQueue.put(event);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         }
     }
     //    @Override
 //    public void run() {
-//        Path pathToFile = Paths.get(pathToEventsFile).toAbsolutePath();
+//        Path pathToFile = Paths.collect(pathToEventsFile).toAbsolutePath();
 //        String line;
 //
 //        try (

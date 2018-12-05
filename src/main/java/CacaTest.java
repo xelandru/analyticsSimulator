@@ -23,7 +23,7 @@ public class CacaTest {
         List<String> strings = Files.readAllLines(path);
         final List<Event> allEvents = new ArrayList<>();
         allEvents.add(null);
-        strings.forEach(s -> allEvents.add(EventUtils.getEventFromString(s)));
+        strings.forEach(s -> allEvents.add(EventUtils.parseEventFromString(s).get()));
         int wSize = 1000;
 
         long[] time = nominalTime(allEvents, wSize);

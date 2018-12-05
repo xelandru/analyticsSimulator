@@ -1,17 +1,17 @@
 import data.Event;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
-import static data.Event.EventType.LOGOUT;
-import static data.EventUtils.*;
+import static data.Event.EventType.*;
 
 public class EventConsumer implements Runnable {
 
-    private final ConcurrentHashMap<String, Event> eventDataBase;
-    private final BlockingQueue<String> sourceEventsQueue;
+    private final ConcurrentHashMap<String, Event> eventMap;
+    private final BlockingQueue<Event> sourceEventsQueue;
+
 
     private final Object o = new Object();
+    private final CyclicBarrier barrier;
     private volatile boolean paused = false;
 
     public void pause() {
@@ -23,13 +23,19 @@ public class EventConsumer implements Runnable {
         synchronized (o) {
             o.notifyAll();
         }
-
     }
 
 
-    public EventConsumer(ConcurrentHashMap<String, Event> eventDataBase, BlockingQueue<String> sourceEventsQueue) {
-        this.eventDataBase = eventDataBase;
+    //    public EventConsumer(ConcurrentHashMap<String, Event> eventMap, BlockingQueue<Event> sourceEventsQueue) {
+//        this.eventMap = eventMap;
+//        this.sourceEventsQueue = sourceEventsQueue;
+//    }
+    public EventConsumer(ConcurrentHashMap<String, Event> eventMap,
+                         BlockingQueue<Event> sourceEventsQueue,
+                         CyclicBarrier barrier) {
+        this.eventMap = eventMap;
         this.sourceEventsQueue = sourceEventsQueue;
+        this.barrier = barrier;
     }
 
     @Override
@@ -39,23 +45,27 @@ public class EventConsumer implements Runnable {
 
             while (!Thread.currentThread().isInterrupted()) {
                 if (!paused) {
-                    String eventAsString = sourceEventsQueue.take();
-                    Event currentEvent = getEventFromString(eventAsString);
+                    Event currentEvent = sourceEventsQueue.take();
                     String key = currentEvent.getUserId() + "|" + currentEvent.getSessionId();
-                    Event replaceableEvent = eventDataBase.putIfAbsent(key, currentEvent);
-                    if (replaceableEvent != null) {
-                        Event updatedEvent = new Event(
-                                currentEvent.getTimeStamp() - replaceableEvent.getTimeStamp(),
-                                currentEvent.getEventType(),
-                                currentEvent.getUserId(),
-                                currentEvent.getSessionId());
-                        eventDataBase.replace(key, replaceableEvent, updatedEvent);
+
+                    Event.EventType type = currentEvent.getEventType();
+
+                    if (type.equals(LOGIN)) {
+                        eventMap.putIfAbsent(key, currentEvent);
+                    } else {
+                        eventMap.computeIfPresent(key, (k, v) -> {
+                            Long sessionDuration = currentEvent.getTimeStamp() - eventMap.get(key).getTimeStamp();
+
+                            return new Event(sessionDuration,
+                                    currentEvent.getEventType(),
+                                    currentEvent.getUserId(),
+                                    currentEvent.getSessionId());
+                        });
                     }
                 }
             }
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
     }

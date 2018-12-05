@@ -1,60 +1,58 @@
 import data.Event;
-import data.EventUtils;
-import org.apache.commons.io.input.Tailer;
-import org.apache.commons.io.input.TailerListener;
-import org.apache.commons.io.input.TailerListenerAdapter;
-import stats.StatisticsGatherer;
+import stats.StatisticsCollector;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
-import static data.Event.EventType.LOGOUT;
+import static data.EventUtils.eventMapCleaner;
 
 public class App {
 
-    private static final String PATH_TO_FILE = "src/main/resources/output.csv";
+    private static final String PATH_TO_FILE = "src/main/resources/data.csv";
     private static final int QUEUE_SIZE = 200_000;
-    private static final long WINDOW_SIZE = 10_000L;
+    private static final long WINDOW_SIZE = 2_000L;
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException, BrokenBarrierException {
 
-        int simulations = 10;
+        int simulations = 2;
         int iteration = 0;
 
 
-        BlockingQueue<String> eventQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
-        ConcurrentHashMap<String, Event> dataBase = new ConcurrentHashMap<>();
-        EventProducer producer = new EventProducer(eventQueue, PATH_TO_FILE);
-        EventConsumer consumer = new EventConsumer(dataBase, eventQueue);
+        BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
+        ConcurrentHashMap<String, Event> eventMap = new ConcurrentHashMap<>();
+        StatisticsCollector statistics = new StatisticsCollector(eventMap, WINDOW_SIZE);
 
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        final CyclicBarrier barrier = new CyclicBarrier(2);
+        EventProducer producer = new EventProducer(eventQueue, PATH_TO_FILE);
+        EventConsumer consumer = new EventConsumer(eventMap, eventQueue, barrier);
+
+        ExecutorService service = Executors.newFixedThreadPool(2);
+
         service.submit(producer);
         service.submit(consumer);
-        StatisticsGatherer statistics = new StatisticsGatherer(dataBase, WINDOW_SIZE);
 
         Instant start, end;
         end = start = Instant.now();
         long timeElapsed;
 
+
         while (iteration < simulations) {
             timeElapsed = Duration.between(start, end).toMillis();
             if (timeElapsed > WINDOW_SIZE) {
                 consumer.pause();
-                System.out.println(statistics.get(iteration));
+                System.out.printf(statistics.collect());
+                eventMapCleaner(eventMap);
                 consumer.resume();
                 iteration++;
                 start = end = Instant.now();
             } else {
                 end = Instant.now();
             }
+
         }
         service.shutdown();
         try {

@@ -93,3 +93,23 @@ Logouts: 1000
 Logins : 0
 Logouts: 1000
 *******************
+sed -n "1,1000p"        $INPUT >> $OUTPUT
+sed -n "1001,2000p"     $INPUT >> $OUTPUT
+sed -n "2001,3000p"     $INPUT >> $OUTPUT
+sed -n "3001,4000p"     $INPUT >> $OUTPUT
+sed -n "4001,5000p"     $INPUT >> $OUTPUT
+sed -n "5001,6000p"     $INPUT >> $OUTPUT
+sed -n "6001,7000p"     $INPUT >> $OUTPUT
+sed -n "7001,8000p"     $INPUT >> $OUTPUT
+sed -n "8001,9000p"     $INPUT >> $OUTPUT
+sed -n "9001,10000p"    $INPUT >> $OUTPUT
+sed -n "10001,11000p"   $INPUT >> $OUTPUT
+sed -n "11001,12000p"   $INPUT >> $OUTPUT
+sed -n "12001,13000p"   $INPUT >> $OUTPUT
+sed -n "13001,14000p"   $INPUT >> $OUTPUT
+sed -n "14001,15000p"   $INPUT >> $OUTPUT
+sed -n "15001,16000p"   $INPUT >> $OUTPUT
+sed -n "16001,17000p"   $INPUT >> $OUTPUT
+sed -n "17001,18000p"   $INPUT >> $OUTPUT
+sed -n "18001,19000p"   $INPUT >> $OUTPUT
+sed -n "19001,20000p"   $INPUT >> $OUTPUT
