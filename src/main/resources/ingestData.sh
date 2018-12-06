@@ -7,10 +7,8 @@ START=1
 STEP=1000
 END=1000
 STOP=20000
-WAIT=0
+WAIT=4
 > $OUTPUT
-sleep $WAIT
-
 while [ $END -le $STOP ]
 do
 START_TIME=$(date +%s.%N)

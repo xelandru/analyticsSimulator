@@ -27,7 +27,7 @@ public final class EventUtils {
         return Optional.empty();
     }
 
-    public static void eventMapCleaner(Map<String, Event> eventDB) {
+    public static void cleanLogoutEventsFromMap(Map<String, Event> eventDB) {
         eventDB.entrySet().removeIf(entry -> entry.getValue().getEventType().equals(LOGOUT));
     }
 

@@ -23,8 +23,9 @@ public class EventProducer implements Runnable {
     public void run() {
         Path pathToFile = Paths.get(pathToEventsFile).toAbsolutePath();
         MyTailerListener listener = new MyTailerListener();
-        Tailer tailer = new Tailer(pathToFile.toFile(), listener);
+        Tailer tailer = new Tailer(pathToFile.toFile(), listener,250);
         tailer.run();
+        tailer.stop();
     }
 
     private class MyTailerListener extends TailerListenerAdapter {
