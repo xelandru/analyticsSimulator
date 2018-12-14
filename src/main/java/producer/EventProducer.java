@@ -1,3 +1,5 @@
+package producer;
+
 import data.Event;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -42,25 +44,4 @@ public class EventProducer implements Runnable {
             }
         }
     }
-    //    @Override
-//    public void run() {
-//        Path pathToFile = Paths.collect(pathToEventsFile).toAbsolutePath();
-//        String line;
-//
-//        try (
-//                InputStream in = Files.newInputStream(pathToFile);
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(in))
-//        ) {
-//            while (!Thread.currentThread().isInterrupted()) {
-//                line = reader.readLine();
-//                if (line != null && !(line.isEmpty())) {
-//                    eventQueue.put(line);
-//                }
-//            }
-//
-//        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-//            Thread.currentThread().interrupt();
-//        }
-//    }
 }

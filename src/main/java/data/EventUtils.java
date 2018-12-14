@@ -1,10 +1,8 @@
 package data;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static data.Event.*;
-import static data.Event.EventType.LOGOUT;
 
 public final class EventUtils {
 
@@ -25,10 +23,6 @@ public final class EventUtils {
             return Optional.of(new Event(timeStamp, type, userId, sessionId));
         }
         return Optional.empty();
-    }
-
-    public static void cleanLogoutEventsFromMap(Map<String, Event> eventDB) {
-        eventDB.entrySet().removeIf(entry -> entry.getValue().getEventType().equals(LOGOUT));
     }
 
     private static boolean isNumeric(String str) {

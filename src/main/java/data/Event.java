@@ -6,15 +6,6 @@ public class Event {
     private final String userId;
     private final String sessionId;
     private final EventType eventType;
-    private int window;
-
-    public int getWindow() {
-        return window;
-    }
-
-    public void incrementWindow() {
-        window++;
-    }
 
     public long getTimeStamp() {
         return timeStamp;
@@ -50,21 +41,7 @@ public class Event {
         if (o == null || getClass() != o.getClass()) return false;
 
         Event event = (Event) o;
-
-        if (timeStamp != event.timeStamp) return false;
-        if (!userId.equals(event.userId)) return false;
-        if (!sessionId.equals(event.sessionId)) return false;
-        return eventType == event.eventType;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (timeStamp ^ (timeStamp >>> 32));
-        result = 31 * result + userId.hashCode();
-        result = 31 * result + sessionId.hashCode();
-        result = 31 * result + eventType.hashCode();
-        return result;
+        return userId.equals(event.userId) && sessionId.equals(event.sessionId);
     }
 
     @Override
